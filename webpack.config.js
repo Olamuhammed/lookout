@@ -1,5 +1,6 @@
 const path = require('path')
 const webpack = require('webpack')
+const BrotliPlugin = require('brotli-webpack-plugin')
 
 module.exports = {
   entry: './app/app.js',
@@ -15,6 +16,17 @@ module.exports = {
       path.resolve(__dirname, 'app'),
       path.resolve(__dirname, 'node_modules')
     ]
+  },
+  optimization: {
+    splitChunks:{
+      cacheGroups:{
+        commons:{
+        test: /[\\/]node_modules[\\/]/,
+        name:'vendors',
+        chunks:'all'
+        }
+      }
+    }
   },
   module: {
     rules: [
@@ -44,6 +56,12 @@ module.exports = {
     clientLogLevel: 'none'
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new BrotliPlugin({
+      asset: '[path].br[query]',
+      test:/\.(js|css|html|svg)$/,
+      threshold: 10240,
+      minRatio: 0.8
+    })
   ]
 }
